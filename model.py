@@ -48,7 +48,7 @@ def model_fn(features, labels, mode, params=None):
     #                                            Model                                                  #
     #####################################################################################################
     with tf.variable_scope('conv1'):
-        conv1_1 = slim.conv2d(xin, 16, (3, 3), weights_regularizer=regularizer)
+        conv1_1 = slim.conv2d(xin, 32, (3, 3), weights_regularizer=regularizer)
         conv1_2 = slim.conv2d(conv1_1, 32, (3, 3), weights_regularizer=regularizer, activation_fn=None)
         conv1_bn = batch_norm(conv1_2)
     pool1 = slim.max_pool2d(conv1_bn, (2, 2), 2, 'VALID')
@@ -66,8 +66,14 @@ def model_fn(features, labels, mode, params=None):
     pool3 = slim.max_pool2d(conv3_bn, (2, 2), 2, 'VALID')
 
     with tf.variable_scope('conv4'):
-        conv4 = slim.conv2d(pool3, params['n_classes'], (1, 1))
-    logits = tf.reduce_mean(conv4, axis=(1, 2), name='logits')
+        conv4_1 = slim.conv2d(pool3, 64, (3, 3), weights_regularizer=regularizer)
+        conv4_2 = slim.conv2d(conv4_1, 64, (3, 3), weights_regularizer=regularizer, activation_fn=None)
+        conv4_bn = batch_norm(conv4_2)
+
+    with tf.variable_scope('conv5'):
+        conv5 = slim.conv2d(conv4_bn, params['n_classes'], (1, 1), activation_fn=None)
+
+    logits = tf.reduce_mean(conv5, axis=(1, 2), name='logits')
     output = tf.argmax(logits, axis=1, name='predictions')
     output = output[:, tf.newaxis]
     #####################################################################################################
