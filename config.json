@@ -1,0 +1,10 @@
+{
+  "n_classes": 10,
+  "lr": 1e-3,
+  "n_examples_for_cv": 10000,
+  "n_examples_for_train": 11000,
+  "batch_size": 64,
+  "model_dir": "/home/wenfeng/Downloads/svhn",
+  "reg": null,
+  "checkpoint_every_secs": 600
+}
