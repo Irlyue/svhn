@@ -2,8 +2,15 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
 
-def input_fn(xin, yin, batch_size=32, n_epochs=1, shuffle=False):
-    data = tf.data.Dataset.from_tensor_slices((xin, yin))
+def input_fn(xin, yin, use_gen=True, batch_size=32, n_epochs=1, shuffle=False):
+    def gen():
+        yield from zip(xin, yin)
+
+    if use_gen:
+        data = tf.data.Dataset.from_generator(gen, (tf.float32, tf.int32),
+                                              (tf.TensorShape([32, 32, 3]), tf.TensorShape([1])))
+    else:
+        data = tf.data.Dataset.from_tensor_slices((xin, yin))
     if shuffle:
         data = data.shuffle(1000)
     data = data.repeat(n_epochs).batch(batch_size)
